@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Icon Generator</title>
+</head>
+
+<body>
+    <canvas id="c16" width="16" height="16"></canvas>
+    <canvas id="c48" width="48" height="48"></canvas>
+    <canvas id="c128" width="128" height="128"></canvas>
+    <script>
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const r = size * 0.1875; // border-radius ratio
+
+            // Background
+            const grad = ctx.createLinearGradient(0, 0, size, size);
+            grad.addColorStop(0, '#2d2d2d');
+            grad.addColorStop(1, '#1a1a1a');
+
+            ctx.beginPath();
+            ctx.roundRect(0, 0, size, size, r);
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            // Letter Ц
+            ctx.fillStyle = '#e8e8e8';
+            ctx.font = `bold ${size * 0.41}px Inter, system-ui, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Ц', size / 2, size / 2 + size * 0.02);
+
+            // Blue dot
+            ctx.beginPath();
+            ctx.arc(size * 0.766, size * 0.234, size * 0.0625, 0, Math.PI * 2);
+            ctx.fillStyle = '#5e9fff';
+            ctx.globalAlpha = 0.9;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        }
+
+        [16, 48, 128].forEach(size => {
+            const canvas = document.getElementById('c' + size);
+            drawIcon(canvas, size);
+
+            const link = document.createElement('a');
+            link.download = `icon${size}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.textContent = `Download ${size}x${size}`;
+            document.body.appendChild(link);
+            document.body.appendChild(document.createElement('br'));
+        });
+    </script>
+</body>
+
+</html>

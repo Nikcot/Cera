@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Цера</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --sidebar-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-secondary: #888;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --border-color: #333;
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --font-family: 'Segoe UI', Inter, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* ── Header ── */
+        header {
+            padding: 18px 25px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(18, 18, 18, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.3rem;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--text-secondary);
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .status-dot.active {
+            background-color: var(--success-color);
+            box-shadow: 0 0 8px var(--success-color);
+        }
+
+        .status-dot.recording {
+            background-color: var(--danger-color);
+            animation: pulse-red 1.5s infinite;
+        }
+
+        /* ── Tabs ── */
+        .tabs {
+            display: flex;
+            padding: 0 25px;
+            gap: 25px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-color);
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            padding: 15px 5px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            position: relative;
+            transition: 0.2s;
+        }
+
+        .tab-btn:focus {
+            outline: none;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-color);
+        }
+
+        .tab-btn:focus {
+            outline: none;
+        }
+
+        .tab-btn.active {
+            color: var(--text-color);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent-color);
+        }
+
+        /* ── Content Area ── */
+        main {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 25px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .view.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* ── Status Bar (Summary View) ── */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            /* slightly lighter bg */
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            /* hidden until active */
+        }
+
+        .status-bar.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .status-msg {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .status-icon {
+            font-size: 1.1em;
+        }
+
+        .timer-badge {
+            background: var(--border-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: var(--text-color);
+            font-size: 0.85em;
+        }
+
+
+        /* ── Transcription View ── */
+        .log-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 16px;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        .log-time {
+            color: var(--text-secondary);
+            font-size: 0.85em;
+            min-width: 60px;
+            font-feature-settings: "tnum";
+            padding-top: 4px;
+        }
+
+        .log-text {
+            line-height: 1.6;
+            color: #ececec;
+            font-size: 1rem;
+        }
+
+        /* ── Summary View ── */
+        #summaryText {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            color: #d4d4d4;
+            font-size: 0.95rem;
+        }
+
+        .summary-placeholder {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-mini {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-mini:hover {
+            border-color: var(--text-color);
+            color: var(--text-color);
+        }
+
+        .btn-mini:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Status Loader */
+        .status-loader {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* Button Loading Animation */
+
+        .btn-loading {
+            color: transparent !important;
+            pointer-events: none;
+            position: relative;
+        }
+
+        .btn-loading::after {
+            content: "";
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            margin-left: -9px;
+            margin-top: -9px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--text-color);
+            color: var(--text-color);
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+
+        /* New Action Grid Layout */
+        .action-grid {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            border-top: 1px solid #333;
+            padding-top: 20px;
+        }
+
+        .action-card-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 5px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            height: 70px;
+            /* Uniform height */
+            gap: 5px;
+        }
+
+        .action-card-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--text-color);
+            color: var(--text-color);
+        }
+
+        .action-card-btn span.icon {
+            font-size: 1.2rem;
+            margin-bottom: 2px;
+        }
+
+        .action-card-btn span.label {
+            font-size: 0.75rem;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .action-card-btn.primary {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .action-card-btn.primary:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        /* ── Controls (Bottom Bar) ── */
+        footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: var(--bg-color);
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .model-select {
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 12px 15px;
+            /* Remove native arrow */
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            /* Custom Arrow */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            /* Position arrow same distance from right as text is from left (15px) */
+            background-position: right 15px center;
+            /* Ensure text doesn't overlap arrow */
+            padding-right: 40px;
+
+            border-radius: 8px;
+            outline: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            flex: 1;
+            min-width: 0;
+            /* Fix for Windows High Contrast / some browsers */
+            background-color: var(--sidebar-bg);
+        }
+
+        .rec-btn {
+            flex: 1;
+            background: #3b82f6;
+            /* Blue */
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
+        }
+
+        .rec-btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .rec-btn:active {
+            transform: translateY(0);
+        }
+
+        .rec-btn.recording {
+            background: #ef4444;
+            /* Red */
+            box-shadow: none;
+            animation: breathe 3s infinite ease-in-out;
+        }
+
+        /* ── Animations ── */
+        @keyframes breathe {
+            0% {
+                background-color: #ef4444;
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+
+            50% {
+                background-color: #dc2626;
+                box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.2);
+            }
+
+            100% {
+                background-color: #ef4444;
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* MarkDown Styles */
+        h1,
+        h2,
+        h3 {
+            color: #fff;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+
+        h1 {
+            font-size: 1.5em;
+            border-bottom: 1px solid #333;
+            padding-bottom: 0.3em;
+        }
+
+        h2 {
+            font-size: 1.3em;
+        }
+
+        ul,
+        ol {
+            padding-left: 20px;
+            color: #d4d4d4;
+        }
+
+        b {
+            color: #fff;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #444;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-box {
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 12px;
+            width: 85%;
+            max-width: 320px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            transform: scale(0.95);
+            transition: transform 0.2s;
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: scale(1);
+        }
+
+        /* Magic Icon Glow */
+        .magic-icon {
+            position: relative;
+            z-index: 1;
+            display: inline-block;
+        }
+
+        .magic-icon::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 140%;
+            height: 140%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            background: radial-gradient(circle,
+                    rgba(59, 130, 246, 0.5) 0%,
+                    rgba(6, 182, 212, 0.3) 40%,
+                    rgba(59, 130, 246, 0.0) 70%);
+            filter: blur(20px);
+            animation: glowPulse 4s ease-in-out infinite;
+            border-radius: 50%;
+        }
+
+        @keyframes glowPulse {
+            0% {
+                opacity: 0.5;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+
+            100% {
+                opacity: 0.5;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">
+            <div id="statusDot" class="status-dot"></div>
+            Цера
+        </div>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <div style="font-size: 0.8rem; color: var(--text-secondary);">Desktop v2.2</div>
+        </div>
+    </header>
+
+    <div class="tabs">
+        <div style="display:flex; gap:25px;">
+            <button class="tab-btn active" onclick="switchTab('summary')">Саммари</button>
+            <button class="tab-btn" onclick="switchTab('transcription')">Транскрибация</button>
+        </div>
+        <button id="btnClear" class="btn-mini"
+            style="margin-left:auto; margin-right: -10px; border:none; background:none; font-size:1.2rem; color:var(--text-secondary); opacity:0.5; padding: 5px 10px;"
+            title="Очистить всё">✕</button>
+    </div>
+
+    <main>
+        <!-- View: Transcription -->
+        <div id="view-transcription" class="view" style="position: relative;">
+            <!-- Copy Button (Absolute Top-Right) -->
+            <button id="btnCopyTranscript" onclick="copyTranscript()" class="btn-mini"
+                style="display:none; position: absolute; top: 15px; right: 25px; border:none; background:none; padding:5px; color:var(--text-secondary); opacity:0.7; cursor:pointer;"
+                title="Копировать транскрипцию">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+            </button>
+
+            <!-- Placeholder (Centered, Title then Warning) -->
+            <div id="transcriptionPlaceholder" class="summary-placeholder"
+                style="position: absolute; top:0; left:0; width:100%; height:100%; margin-top:0; justify-content: center;">
+                <div style="font-size: 1.1rem; font-weight: 500;">Здесь появится транскрибация</div>
+                <div style="font-size: 0.9rem; opacity:0.6; line-height: 1.4; max-width: 400px; padding: 0 20px;">
+                    Расшифровка текста может быть неточной.<br>Алгоритмы восстановят смысловую целостность в
+                    саммари.
+                </div>
+            </div>
+
+            <div id="logArea" style="display:none;"></div>
+        </div>
+
+        <!-- View: Summary (Default) -->
+        <div id="view-summary" class="view active">
+
+            <!-- Real-time Status Bar -->
+            <div id="statusBar" class="status-bar">
+                <div class="status-msg">
+                    <span id="statusIcon" class="status-icon">👂</span>
+                    <span id="statusText">Слушаю лектора...</span>
+                </div>
+                <div id="timerBadge" class="timer-badge">Обновление через 3:00</div>
+                <div id="statusLoader" class="status-loader" style="display:none;"></div>
+            </div>
+
+
+            <div id="summaryPlaceholder" class="summary-placeholder">
+                <div class="magic-icon" style="font-size: 3rem; margin-bottom: 10px; opacity:0.9;">📄</div>
+                <div style="font-size: 1.1rem; font-weight: 500;">Здесь появится саммари</div>
+                <div style="font-size: 0.9rem; opacity:0.6;">Начните запись, конспект будет обновляться автоматически.
+                </div>
+
+                <button id="btnGenerateSummary" class="btn-mini" style="margin-top: 15px;">
+                    🪄 Дополнить сейчас
+                </button>
+            </div>
+
+            <div id="summaryResult" style="display:none;">
+                <div id="summaryText"></div>
+
+                <!-- Uniform Action Buttons -->
+                <div class="action-grid">
+                    <button id="btnForceUpdate" class="action-card-btn">
+                        <span class="icon">🔄</span>
+                        <span class="label">Дополнить<br>сейчас</span>
+                    </button>
+
+                    <button id="btnFinalize" class="action-card-btn primary">
+                        <span class="icon">✨</span>
+                        <span class="label">Причесать</span>
+                    </button>
+
+                    <button id="btnExport" class="action-card-btn">
+                        <span class="icon">💾</span>
+                        <span class="label">Экспорт<br>HTML</span>
+                    </button>
+
+                    <button onclick="copySummary()" class="action-card-btn">
+                        <span class="icon">📋</span>
+                        <span class="label">Копировать<br>MD</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <div class="controls-row">
+            <select id="sourceSelect" class="model-select">
+                <option value="system" selected>🖥️ Система</option>
+                <option value="microphone">🎤 Микрофон</option>
+            </select>
+            <select id="modelSelect" class="model-select">
+                <option value="tiny">Tiny</option>
+                <option value="base" selected>Base</option>
+                <option value="small">Small</option>
+                <option value="medium">Medium</option>
+                <option value="large-v3">Large</option>
+            </select>
+        </div>
+
+        <button id="recBtn" class="rec-btn">
+            <span id="recIcon">🎙️</span>
+            <span id="recText">Начать Запись</span>
+        </button>
+    </footer>
+
+    <!-- Custom Confirmation Modal -->
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3 style="margin-top:0; border:none; padding-bottom:0; font-size:1.1rem;">Очистить всё?</h3>
+            <p style="color:var(--text-secondary); font-size:0.9rem; margin: 10px 0 20px 0;">
+                Это удалит весь текст конспекта и транскрипции.
+            </p>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button id="btnCancelModal" class="btn-outline" style="border:none; padding:8px 12px;">Отмена</button>
+                <button id="btnConfirmModal" class="rec-btn"
+                    style="flex:0; padding:8px 16px; min-width:80px; background:var(--danger-color); font-size:0.9rem; box-shadow:none;">Удалить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let isRecording = false;
+        let countdownInterval = null;
+
+        const logArea = document.getElementById('logArea');
+        const recBtn = document.getElementById('recBtn');
+        const statusDot = document.getElementById('statusDot');
+
+        // Wait for API
+        window.addEventListener('pywebviewready', function () {
+            console.log('API Ready');
+            statusDot.classList.add('active'); // Connected to PyWebview
+        });
+
+        // Tabs
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+
+            // Activate
+            const btn = document.querySelector(`.tab-btn[onclick="switchTab('${tabName}')"]`);
+            if (btn) btn.classList.add('active');
+
+            document.getElementById(`view-${tabName}`).classList.add('active');
+        }
+
+        // Recording
+        recBtn.addEventListener('click', async () => {
+            if (!window.pywebview) return alert("API загружается...");
+
+            const model = document.getElementById('modelSelect').value;
+            const source = document.getElementById('sourceSelect').value;
+
+            if (isRecording) {
+                // Stop
+                await pywebview.api.stop_capture();
+                setRecordingUI(false);
+            } else {
+                // Start
+                setRecordingUI(true);
+                const res = await pywebview.api.start_capture(model, source);
+                if (!res.ok) {
+                    alert("Ошибка: " + res.error);
+                    setRecordingUI(false);
+                }
+            }
+        });
+
+        function setRecordingUI(recording) {
+            isRecording = recording;
+            const statusBar = document.getElementById('statusBar');
+
+            if (recording) {
+                recBtn.classList.add('recording');
+                document.getElementById('recText').textContent = "Остановить Запись";
+                document.getElementById('recIcon').textContent = "⏹";
+                statusDot.className = "status-dot recording";
+
+                document.getElementById('modelSelect').disabled = true;
+                document.getElementById('sourceSelect').disabled = true;
+
+                // Show Status Bar
+                statusBar.classList.add('visible');
+                updateStatus('listening');
+                startCountdown(180);
+
+            } else {
+                recBtn.classList.remove('recording');
+                document.getElementById('recText').textContent = "Начать Запись";
+                document.getElementById('recIcon').textContent = "🎙️";
+                statusDot.className = "status-dot active";
+                document.getElementById('modelSelect').disabled = false;
+                document.getElementById('sourceSelect').disabled = false;
+
+                // Hide Status Bar
+                statusBar.classList.remove('visible');
+                stopCountdown();
+            }
+        }
+
+        // Transcription Log
+        window.addLogItem = function (time, text) {
+            const div = document.createElement('div');
+            div.className = 'log-item';
+            div.innerHTML = `<div class="log-time">${time}</div><div class="log-text">${text}</div>`;
+            logArea.appendChild(div);
+            // Auto-scroll logic (only if near bottom)
+            logArea.scrollTop = logArea.scrollHeight;
+
+            // Show copy button if hidden
+            const btnCopy = document.getElementById('btnCopyTranscript');
+            if (btnCopy && btnCopy.style.display === 'none') {
+                btnCopy.style.display = 'block';
+            }
+
+            // Toggle Placeholder/LogArea
+            const ph = document.getElementById('transcriptionPlaceholder');
+            if (ph && ph.style.display !== 'none') ph.style.display = 'none';
+
+            if (logArea.style.display === 'none') logArea.style.display = 'block';
+        };
+
+        // Global Markdown Store
+        window.currentMarkdown = "";
+
+        // Auto-Summary Update from Backend
+        window.updateSummary = function (summaryText) {
+            console.log("Auto-Summary received");
+
+            // Unescape if needed (sometimes json.dumps adds extra quotes if double encoded, but usually fine)
+            // Store raw MD
+            if (typeof summaryText === 'string') {
+                if (summaryText.startsWith('"') && summaryText.endsWith('"')) {
+                    // Try to parse if double JSON encoded
+                    try { summaryText = JSON.parse(summaryText); } catch (e) { }
+                }
+            }
+
+            window.currentMarkdown = summaryText;
+
+            document.getElementById('summaryPlaceholder').style.display = 'none';
+            document.getElementById('summaryResult').style.display = 'block';
+
+            const html = parseMarkdown(summaryText);
+            document.getElementById('summaryText').innerHTML = html;
+
+            // Note: Timer and Status are managed by Backend events
+        };
+
+
+        // Status & Countdown Logic
+        window.updateStatus = function (status) {
+            const icon = document.getElementById('statusIcon');
+            const text = document.getElementById('statusText');
+
+            if (status === 'listening') {
+                icon.textContent = "👂";
+                text.textContent = "Слушаю лектора...";
+                document.getElementById('timerBadge').style.display = 'block';
+                document.getElementById('statusLoader').style.display = 'none';
+            } else if (status === 'processing') {
+                icon.textContent = "🤖";
+                text.textContent = "Обрабатываю услышанное...";
+                document.getElementById('timerBadge').style.display = 'none';
+                document.getElementById('statusLoader').style.display = 'block';
+            }
+
+        };
+
+        window.startCountdown = function (seconds) {
+            stopCountdown();
+            let timeLeft = seconds;
+
+            function tick() {
+                const m = Math.floor(timeLeft / 60);
+                const s = timeLeft % 60;
+                document.getElementById('timerBadge').textContent = `Обновление через ${m}:${s < 10 ? '0' : ''}${s}`;
+                timeLeft--;
+                if (timeLeft < 0) timeLeft = 0;
+            }
+
+            tick();
+            countdownInterval = setInterval(tick, 1000);
+        };
+
+        function stopCountdown() {
+            if (countdownInterval) clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
+
+
+        // Manual Update
+        const handleUpdate = async (btnId) => {
+            const btn = document.getElementById(btnId);
+            const originalText = btn.innerHTML;
+            btn.classList.add('btn-loading'); // Spinner
+
+            const res = await pywebview.api.generate_summary();
+            btn.classList.remove('btn-loading');
+
+            if (res.ok) {
+                // updateSummary is called automatically by backend logic usually, but here we enforce
+                window.updateSummary(res.summary);
+            } else {
+                alert("Ошибка: " + res.error);
+            }
+        };
+
+        document.getElementById('btnForceUpdate').addEventListener('click', () => handleUpdate('btnForceUpdate'));
+        document.getElementById('btnGenerateSummary').addEventListener('click', () => handleUpdate('btnGenerateSummary'));
+
+        // Export
+        document.getElementById('btnExport').addEventListener('click', async () => {
+            const html = document.getElementById('summaryText').innerHTML;
+            await pywebview.api.export_html(html);
+        });
+
+        // Finalize Logic
+        document.getElementById('btnFinalize').addEventListener('click', async () => {
+            const btn = document.getElementById('btnFinalize');
+            btn.classList.add('btn-loading');
+
+            const res = await pywebview.api.finalize_current_summary();
+
+            btn.classList.remove('btn-loading');
+            if (!res.ok) alert("Ошибка: " + res.error);
+        });
+
+        function copySummary() {
+            // Copy RAW Markdown for Notion/Obsidian
+            const text = window.currentMarkdown || document.getElementById('summaryText').innerText;
+            navigator.clipboard.writeText(text);
+
+            const btn = document.querySelector('button[onclick="copySummary()"]');
+            const original = btn.innerHTML;
+            // Assuming the structure is span icon + span label
+            // We can just change the label temporarily or show a toast.
+            // For card button, let's just alert strictly or change border color
+            btn.style.borderColor = "var(--success-color)";
+            setTimeout(() => btn.style.borderColor = "", 1000);
+        }
+
+        function copyTranscript() {
+            const items = document.querySelectorAll('.log-text');
+            let fullText = "";
+            items.forEach(div => fullText += div.innerText + "\n");
+            navigator.clipboard.writeText(fullText);
+            alert("Транскрипт скопирован!");
+        }
+
+        // Clear All
+        // Clear All Logic with Custom Modal
+        const confirmModal = document.getElementById('confirmModal');
+        const btnConfirmModal = document.getElementById('btnConfirmModal');
+        const btnCancelModal = document.getElementById('btnCancelModal');
+
+        document.getElementById('btnClear').addEventListener('click', () => {
+            confirmModal.classList.add('active');
+        });
+
+        btnCancelModal.addEventListener('click', () => {
+            confirmModal.classList.remove('active');
+        });
+
+        btnConfirmModal.addEventListener('click', async () => {
+            confirmModal.classList.remove('active');
+
+            // Execute Clear Actions
+            await pywebview.api.clear_state();
+
+            // Clear UI
+            document.getElementById('logArea').innerHTML = '';
+            document.getElementById('summaryText').innerHTML = '';
+            window.currentMarkdown = "";
+
+            // Summary View Reset
+            document.getElementById('summaryResult').style.display = 'none';
+            document.getElementById('summaryPlaceholder').style.display = 'flex';
+
+            // Transcription View Reset
+            document.getElementById('logArea').style.display = 'none';
+            const transPh = document.getElementById('transcriptionPlaceholder');
+            if (transPh) transPh.style.display = 'flex';
+
+            // Hide copy button
+            const btnCopy = document.getElementById('btnCopyTranscript');
+            if (btnCopy) btnCopy.style.display = 'none';
+
+            // Reset timer badge if needed
+            if (!isRecording) {
+                stopCountdown();
+            }
+        });
+
+
+        // Simple Markdown Parser
+        function parseMarkdown(text) {
+            if (!text) return '';
+            let html = text
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                .replace(/\*\*(.*)\*\*/gim, '<b>$1</b>')
+                .replace(/\*(.*)\*/gim, '<i>$1</i>')
+                .replace(/^- (.*$)/gim, '<li>$1</li>')
+                .replace(/\n/gim, '<br>');
+            return html;
+        }
+
+    </script>
+</body>
+
+</html>

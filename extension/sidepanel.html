@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Цера — Панель</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="sidepanel-container">
+        <!-- Header -->
+        <div class="sp-header">
+            <div class="sp-header-top">
+                <div class="sp-title-row">
+                    <div class="sp-logo">
+                        Ц
+                        <span class="sp-logo-dot"></span>
+                    </div>
+                    <span class="sp-title">Цера</span>
+
+                    <!-- Wave animation (visible when recording) -->
+                    <div class="wave-container hidden" id="waveAnim">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status bar -->
+            <div class="sp-status-bar">
+                <div class="sp-status-dot" id="spStatusDot"></div>
+                <span class="sp-status-text" id="spStatusText">Готово к записи</span>
+                <span class="sp-timer hidden" id="spTimer">00:00</span>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="sp-controls" style="padding-top: 10px;">
+            <button class="sp-ctrl-btn primary" id="spRecordBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="2" width="6" height="12" rx="3" />
+                    <path d="M5 10a7 7 0 0 0 14 0" />
+                    <path d="M12 18v4" />
+                    <path d="M8 22h8" />
+                </svg>
+                Записать
+            </button>
+            <button class="sp-ctrl-btn" id="spSummaryBtn" title="Создать саммари сейчас">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+                Саммари
+            </button>
+            <button class="sp-ctrl-btn" id="spCopyBtn" title="Копировать всё">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                </svg>
+                Копия
+            </button>
+            <button class="sp-ctrl-btn" id="spClearBtn" title="Очистить всё">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+                Очистить
+            </button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="sp-tabs">
+            <button class="sp-tab active" id="tabTranscript" data-tab="transcript">📝 Транскрипция</button>
+            <button class="sp-tab" id="tabSummary" data-tab="summary">✨ Саммари</button>
+        </div>
+
+        <!-- Content — Transcription -->
+        <div class="sp-content" id="contentTranscript">
+            <div class="empty-state" id="emptyTranscript">
+                <div class="empty-icon">📝</div>
+                <div class="empty-title">Транскрипция появится здесь</div>
+                <div class="empty-desc">Нажмите «Записать» чтобы начать распознавание речи</div>
+            </div>
+        </div>
+
+        <!-- Content — Summary -->
+        <div class="sp-content hidden" id="contentSummary">
+            <div class="empty-state" id="emptySummary">
+                <div class="empty-icon">✨</div>
+                <div class="empty-title">AI саммари</div>
+                <div class="empty-desc">Саммари будет создано автоматически или нажмите кнопку «Саммари»</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="sidepanel.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,5 @@
+pywebview
+faster-whisper
+pyaudiowpatch
+numpy
+google-generativeai

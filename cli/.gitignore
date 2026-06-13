@@ -1,0 +1,29 @@
+# API ключи и конфигурация
+config.py
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Виртуальное окружение
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Тестовые файлы
+test_export.*
+
+# Экспорты
+*.html
+*.pdf
+Конспект_*.html
+Конспект_*.pdf
