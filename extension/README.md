@@ -1,77 +1,77 @@
-# 🧠 Цера — Chrome Extension (Автономное)
+# 🧠 Cera — Chrome Extension (Standalone)
 
-Расширение для Chrome: транскрибация аудио через **автономный Whisper (WASM)** и AI-конспекты через **Gemini**.
+A Chrome extension for audio transcription via **standalone Whisper (WASM)** and AI summaries via **Gemini**.
 
-Работает **полностью в браузере**, без установки Python и сторонних серверов.
+Runs **entirely in the browser**, without requiring Python installations or external servers.
 
 ---
 
-## 📦 Установка
+## 📦 Installation
 
-### Шаг 1 — Сборка расширения
+### Step 1 — Build the extension
 
-Для работы расширения нужно собрать бандл (так как используется Transformers.js):
+To run the extension, you need to build the bundle (because Transformers.js is used):
 
-1. Установите [Node.js](https://nodejs.org/) (если нет)
-2. Откройте терминал в папке `CeraExtension`
-3. Выполните:
+1. Install [Node.js](https://nodejs.org/) (if not already installed)
+2. Open a terminal in the `extension` folder
+3. Run:
 
 ```bash
 npm install
 npm run build
 ```
 
-Это создаст файл `offscreen.bundle.js` — ядро распознавания речи.
+This will create `offscreen.bundle.js` — the core of the speech recognition engine.
 
-### Шаг 2 — Установка в Chrome
+### Step 2 — Install in Chrome
 
-1. Откройте в Chrome: `chrome://extensions/`
-2. Включите **«Режим разработчика»** (переключатель справа вверху)
-3. Нажмите **«Загрузить распакованное расширение»**
-4. Выберите папку `CeraExtension`
+1. Open `chrome://extensions/` in Chrome
+2. Enable **Developer mode** (toggle in the top right)
+3. Click **Load unpacked**
+4. Select the `extension` folder
 
-И всё! 🎉
-
----
-
-## 🚀 Использование
-
-1. Нажмите на иконку **Цера** в панели расширений.
-2. При **первом запуске** расширение автоматически загрузит модель Whisper base (~150 МБ).
-   - *Статус загрузки будет виден в настройках.*
-3. Выберите источник (Вкладка / Микрофон) и нажмите **Запись**.
-
-### Функции:
-- **Транскрибация**: в реальном времени, прямо в браузере.
-- **AI Саммари**: каждые 3 минуты (настраивается) через Gemini API.
-- **Панель**: удобный просмотр истории и саммари.
+And you're done! 🎉
 
 ---
 
-## ⚙️ Параметры
+## 🚀 Usage
 
-| Параметр | Значение |
-|----------|----------|
-| Движок | Whisper (WASM, Transformers.js) |
-| Модель | `Xenova/whisper-base` (int8) |
-| Язык | Русский |
-| Чанк | 10 секунд |
-| Работа с сетью | Только для Gemini API и загрузки модели (один раз) |
+1. Click on the **Cera** icon in the extensions panel.
+2. Upon the **first launch**, the extension will automatically download the Whisper base model (~150 MB).
+   - *Download progress will be visible in the settings.*
+3. Choose the source (Tab / Microphone) and click **Record**.
+
+### Features:
+- **Transcription**: Real-time, directly in your browser.
+- **AI Summary**: Every 3 minutes (customizable) via the Gemini API.
+- **Panel**: Convenient view of your history and summaries.
 
 ---
 
-## 📁 Структура
+## ⚙️ Settings
+
+| Parameter | Value |
+|-----------|-------|
+| Engine | Whisper (WASM, Transformers.js) |
+| Model | `Xenova/whisper-base` (int8) |
+| Language | Russian / English |
+| Chunk | 10 seconds |
+| Networking | Only for Gemini API and initial model download |
+
+---
+
+## 📁 Structure
 
 ```
-CeraExtension/
-├── build.js            ← Скрипт сборки (esbuild)
-├── package.json        ← Зависимости (transformers.js)
-├── manifest.json       ← Конфиг Chrome Extension
+extension/
+├── build.js            ← Build script (esbuild)
+├── package.json        ← Dependencies (transformers.js)
+├── manifest.json       ← Chrome Extension config
 ├── background.js       ← Service Worker
 ├── src/
-│   └── offscreen.js    ← Логика Whisper (исходник)
-├── offscreen.html      ← Загрузчик бандла
-├── popup.html / .js    ← UI окна
-├── sidepanel.html / .js ← Боковая панель
-└── styles.css          ← Тёмная тема
+│   └── offscreen.js    ← Whisper logic (source)
+├── offscreen.html      ← Bundle loader
+├── popup.html / .js    ← UI window
+├── sidepanel.html / .js ← Side panel
+└── styles.css          ← Dark theme
 ```

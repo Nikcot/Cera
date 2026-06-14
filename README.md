@@ -1,26 +1,26 @@
-# Cera (Цера)
+# Cera
 
-Набор инструментов для локальной транскрибации аудио с использованием Whisper и создания AI-конспектов с помощью Gemini. Включает в себя три версии:
+A suite of tools for local audio transcription using Whisper and AI-powered summarization using Gemini. Includes three versions:
 
-- **CLI / Web**: Базовая версия скриптов с веб-интерфейсом.
-- **Desktop**: Полноценное настольное приложение на Python (PySide6/Qt).
-- **Extension**: Автономное расширение для Chrome (Whisper WASM + Gemini).
+- **CLI / Web**: The base version featuring scripts and a web interface.
+- **Desktop**: A fully-featured desktop application built with Python (PySide6/Qt).
+- **Extension**: An autonomous Chrome extension (Whisper WASM + Gemini).
 
-## 🚀 Возможности
-- 🎤 Запись с микрофона и системного звука
-- 🧠 Локальная транскрибация (Whisper / Faster-Whisper / Transformers.js)
-- 📝 Автоматические саммари и конспекты с помощью Gemini AI
-- 💾 Экспорт в красивые HTML и PDF форматы (в десктопной версии)
+## 🚀 Features
+- 🎤 Record from microphone and system audio
+- 🧠 Local transcription (Whisper / Faster-Whisper / Transformers.js)
+- 📝 Automatic summaries and notes powered by Gemini AI
+- 💾 Export to beautiful HTML and PDF formats (in the Desktop version)
 
-## 📁 Структура проекта
-- `/cli` — скрипты и веб-версия
-- `/desktop` — десктопное приложение
-- `/extension` — расширение для браузера
+## 📁 Project Structure
+- `/cli` — scripts and web version
+- `/desktop` — desktop application
+- `/extension` — browser extension
 
-## ⚙️ Настройка и запуск
-В каждой папке есть свой собственный `README.md` с подробной инструкцией по установке и запуску.
+## ⚙️ Setup & Usage
+Each directory contains its own `README.md` with detailed installation and running instructions.
 
-> **Важно:** Для работы AI-конспектов вам понадобится бесплатный ключ [Gemini API](https://aistudio.google.com/apikey).
+> **Note:** For the AI-summarization to work, you will need a free [Gemini API Key](https://aistudio.google.com/apikey).
 
-## 📄 Лицензия
+## 📄 License
 MIT License

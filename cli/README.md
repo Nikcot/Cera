@@ -1,88 +1,74 @@
-# 🧠 Цера
+# 🧠 Cera
 
-Desktop приложение для транскрибации аудио и создания AI-саммари.
+Desktop application for audio transcription and creating AI summaries.
 
-## 🎯 Возможности
+## 🎯 Features
 
-- ✅ **Запись системного звука** - записывайте звук из браузера (Zoom, Meet, YouTube)
-- ✅ **Запись с микрофона** - записывайте свой голос
-- ✅ **AI-транскрибация** - Faster-Whisper (офлайн, приватно)
-- ✅ **4 модели на выбор** - от быстрой Tiny до точной Large-v3
-- ✅ **AI-саммари** - Gemini создает конспекты каждые 3 минуты ⭐ НОВОЕ!
-- ✅ **Экспорт в HTML** - красивые конспекты в стиле Notion ⭐ НОВОЕ!
-- ✅ **Экспорт в PDF** - для печати и отправки ⭐ НОВОЕ!
-- ✅ **Тёмная тема** - дизайн в стиле Notion
+- ✅ **System Audio Recording** - record audio from your browser (Zoom, Meet, YouTube)
+- ✅ **Microphone Recording** - record your voice
+- ✅ **AI Transcription** - Faster-Whisper (offline, private)
+- ✅ **4 Models to Choose From** - from the fast Tiny to the highly accurate Large-v3
+- ✅ **AI Summarization** - Gemini creates summaries every 3 minutes ⭐ NEW!
+- ✅ **Export to HTML** - beautiful notes in Notion style ⭐ NEW!
+- ✅ **Export to PDF** - for printing and sharing ⭐ NEW!
+- ✅ **Dark Theme** - Notion-style design
 
-## 📦 Установка
+## 📦 Installation
 
-### 1. Установите зависимости:
+### 1. Install dependencies:
 ```bash
 py -m pip install -r requirements.txt
 ```
 
-### 2. Настройте Gemini API:
-1. Получите API ключ: https://aistudio.google.com/apikey
-2. Скопируйте `config.example.py` в `config.py`
-3. Вставьте свой API ключ в `config.py`
+### 2. Configure Gemini API:
+1. Get an API key: https://aistudio.google.com/apikey
+2. Copy `config.example.py` to `config.py`
+3. Insert your API key into `config.py`
 
-### 3. Запустите приложение:
+### 3. Run the application:
 ```bash
 run.bat
 ```
 
-Или вручную:
+Or manually:
 ```bash
 py main.py
 ```
 
-## 🎨 Интерфейс
+## 🎨 Interface
 
-- **Источник звука**: Выберите системный звук или микрофон
-- **Модель**: Выберите модель Whisper (Base рекомендуется)
-- **Транскрипция**: Текст появляется в реальном времени (каждые 10 сек)
-- **AI Саммари**: Gemini создает конспект каждые 3 минуты
-- **Экспорт**: Сохраните в HTML (с русским) или PDF (транслитерация)
+- **Audio Source**: Choose between system audio or microphone
+- **Model**: Select the Whisper model (Base is recommended)
+- **Transcription**: Text appears in real-time (every 10 seconds)
+- **AI Summary**: Gemini generates a summary every 3 minutes
+- **Export**: Save as HTML or PDF
 
-## 🔧 Требования
+## 🔧 Requirements
 
 - Python 3.11+
 - Windows 10/11
-- ~500MB RAM для модели Base
-- ~2GB RAM для модели Large-v3
-- Gemini API ключ (бесплатно!)
+- ~500MB RAM for the Base model
+- ~2GB RAM for the Large-v3 model
+- Gemini API key (Free!)
 
-## 📝 Использование
+## 📝 Usage
 
-1. Выберите источник звука (системный или микрофон)
-2. Выберите модель Whisper
-3. Нажмите "Начать запись"
-4. Говорите или включите видео/созвон
-5. Текст появится в окне транскрипции (каждые 10 сек)
-6. Каждые 3 минуты Gemini создаст саммари
-7. Сохраните конспект кнопкой "Сохранить HTML" или "Сохранить PDF"
-
-## 💡 Особенности экспорта
-
-### HTML (рекомендуется)
-- ✅ Полная поддержка русского языка
-- ✅ Красивый дизайн в стиле Notion
-- ✅ Тёмная тема
-- ✅ Эмодзи и форматирование
-- ✅ Открывается в браузере
-
-### PDF
-- ⚠️ Использует транслитерацию (русский → латиница)
-- ✅ Подходит для печати
-- 💡 Для русского текста используйте HTML
+1. Select an audio source
+2. Select a Whisper model
+3. Click "Start Recording"
+4. Speak or play a video/meeting
+5. Text will appear in the transcription window (updates every 10 sec)
+6. Every 3 minutes, Gemini will create a summary
+7. Save the notes using the "Save HTML" or "Save PDF" buttons
 
 ## 🚀 Roadmap
 
-- [x] Интеграция Gemini API
-- [x] Экспорт в HTML/PDF
-- [ ] История записей
-- [ ] Поддержка других языков
-- [ ] Chrome Extension (будущее)
+- [x] Gemini API Integration
+- [x] Export to HTML/PDF
+- [ ] Recording history
+- [ ] Support for more languages
+- [ ] Chrome Extension (future)
 
-## 📄 Лицензия
+## 📄 License
 
-Частный проект
+MIT License
